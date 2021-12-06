@@ -12,11 +12,7 @@ namespace DependencyInjectionConteiner.Container.Tests
     [TestClass()]
     public class DependencyProviderTests
     {
-        [TestInitialize]
-        public void Init() { 
-        
-        
-        }
+
 
         [TestMethod()]
         public void ResolveTestPlainInjection()
@@ -57,6 +53,19 @@ namespace DependencyInjectionConteiner.Container.Tests
             var result2 = provider.Resolve<IService>();
 
             Assert.AreNotEqual(result1, result2);
+        }
+
+        [TestMethod()]
+        public void ResolveTestNamedInjection()
+        {
+            var conf = new DependenciesConfiguration();
+            conf.Register<IService, ServiceImpl1>(LifeCycle.SINGLETONE,1);
+            conf.Register<IService, ServiceImpl2>(LifeCycle.PER_DEPENDENCY, 2);
+            conf.Register<IService, ServiceImpl3>(LifeCycle.PER_DEPENDENCY,3);
+            var provider = new DependencyProvider(conf);
+            var result = provider.Resolve<IService>(3);
+
+            Assert.IsTrue(result is ServiceImpl3);
         }
 
         [TestMethod()] 
