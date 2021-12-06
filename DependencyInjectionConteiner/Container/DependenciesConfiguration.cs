@@ -48,6 +48,7 @@ namespace DependencyInjectionConteiner.Container
                         throw new ArgumentException($"{tImplementation} must be non abstract and must subtype of {tDependeny}");
                     }
                 }
+
             }
                 
 
