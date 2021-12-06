@@ -1,4 +1,3 @@
-DependencyInjectionConteiner/.vs
 DependencyInjectionConteiner/bin
 DependencyInjectionConteiner/obj
 DependencyInjectionConteiner/TestResults
@@ -6,3 +5,4 @@ DependencyInjectionConteiner/TestResults
 *.sln
 DependencyInjectionConteinerTests/bin
 DependencyInjectionConteinerTests/obj
+DependencyInjectionConteiner/.vs
