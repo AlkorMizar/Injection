@@ -68,6 +68,32 @@ namespace DependencyInjectionConteiner.Container.Tests
             Assert.IsTrue(result is ServiceImpl3);
         }
 
+        [TestMethod()]
+        public void ResolveTestGeneric()
+        {
+            var conf = new DependenciesConfiguration();
+            conf.Register<IService, ServiceImpl1>(LifeCycle.SINGLETONE, 1);
+            conf.Register<IService, ServiceImpl2>(LifeCycle.PER_DEPENDENCY, 2);
+            conf.Register<IService, ServiceImpl3>(LifeCycle.PER_DEPENDENCY, 3);
+            var provider = new DependencyProvider(conf);
+            var result = provider.Resolve<IService>(3);
+
+            Assert.IsTrue(result is ServiceImpl3);
+        }
+
+        [TestMethod()]
+        public void ResolveTestOpenGeneric()
+        {
+            var conf = new DependenciesConfiguration();
+            conf.Register<IService, ServiceImpl1>(LifeCycle.SINGLETONE, 1);
+            conf.Register<IService, ServiceImpl2>(LifeCycle.PER_DEPENDENCY, 2);
+            conf.Register<IService, ServiceImpl3>(LifeCycle.PER_DEPENDENCY, 3);
+            var provider = new DependencyProvider(conf);
+            var result = provider.Resolve<IService>(3);
+
+            Assert.IsTrue(result is ServiceImpl3);
+        }
+
         [TestMethod()] 
         public void ResolveAllTest()
         {
