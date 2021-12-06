@@ -1,0 +1,8 @@
+DependencyInjectionConteiner/.vs
+DependencyInjectionConteiner/bin
+DependencyInjectionConteiner/obj
+DependencyInjectionConteiner/TestResults
+*.csproj
+*.sln
+DependencyInjectionConteinerTests/bin
+DependencyInjectionConteinerTests/obj
