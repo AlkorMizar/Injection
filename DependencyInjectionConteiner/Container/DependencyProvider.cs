@@ -29,6 +29,7 @@ namespace DependencyInjectionConteiner.Container
             where T : class
         {
             return (IEnumerable<T>)ResolveAll(typeof(T));
+
         }
 
         private IEnumerable<object> ResolveAll(Type _interface)

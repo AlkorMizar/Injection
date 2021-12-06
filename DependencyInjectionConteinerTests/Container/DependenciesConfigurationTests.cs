@@ -15,6 +15,7 @@ namespace DependencyInjectionConteiner.Container.Tests
         [TestMethod()]
         public void GetImplementationsTest()
         {
+
             var conf = new DependenciesConfiguration();
             conf.Register<IService, ServiceImpl1>();
             conf.Register<IRepository, RepositoryImpl>();

@@ -14,10 +14,11 @@ namespace DependencyInjectionConteiner.Container.Tests
         [TestMethod()]
         public void ResolveTest()
         {
-            Assert.Fail();
+            
+
         }
 
-        [TestMethod()]
+        [TestMethod()] 
         public void ResolveAllTest()
         {
             Assert.Fail();
