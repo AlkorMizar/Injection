@@ -4,8 +4,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DependencyInjectionConteiner.Container
 {
@@ -13,15 +11,16 @@ namespace DependencyInjectionConteiner.Container
     {
         ConcurrentDictionary<Type, Object> singletones;
         private DependenciesConfiguration configuration;
-        public DependencyProvider(DependenciesConfiguration configuration) {
+        public DependencyProvider(DependenciesConfiguration configuration)
+        {
             this.configuration = configuration;
             singletones = new ConcurrentDictionary<Type, object>();
         }
 
-        public T Resolve<T>(Object name=null)
-            where T:class
+        public T Resolve<T>(Object name = null)
+            where T : class
         {
-            return (T)Resolve(typeof(T),name);
+            return Resolve(typeof(T), name) as T;
         }
 
 
@@ -35,7 +34,7 @@ namespace DependencyInjectionConteiner.Container
         private IEnumerable<object> ResolveAll(Type _interface)
         {
             var impls = configuration.GetImplementations(_interface);
-            if (impls!=null)
+            if (impls != null)
             {
                 var collection = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(_interface));
 
@@ -50,27 +49,27 @@ namespace DependencyInjectionConteiner.Container
             return null;
         }
 
-        private Object Resolve(Type _interface,Object name=null)
+        private Object Resolve(Type _interface, Object name = null)
         {
             var impls = configuration.GetImplementations(_interface);
             if (impls != null)
             {
                 var impl = from _impl in impls
-                           where _impl.NameCheck(name)
+                           where name == null || _impl.NameCheck(name)
                            select _impl;
                 return createImplementation(impl.First(), _interface);
 
             }
-            else 
+            else
             {
-                if (_interface.IsGenericType && _interface.GenericTypeArguments.Length!=0)
+                if (_interface.IsGenericType && _interface.GenericTypeArguments.Length != 0)
                 {
                     var @int = _interface.GetGenericTypeDefinition();
                     impls = configuration.GetImplementations(@int);
                     if (impls != null)
                     {
                         var impl = from _impl in impls
-                                   where _impl.NameCheck(name)
+                                   where name == null || _impl.NameCheck(name)
                                    select _impl;
                         return createImplementation(impl.First(), _interface);
 
@@ -81,31 +80,40 @@ namespace DependencyInjectionConteiner.Container
             return null;
         }
 
-        private object createImplementation(ImplContext impl,Type _interface) {
+        private object createImplementation(ImplContext impl, Type _interface)
+        {
             if (impl.LCycle == LifeCycle.SINGLETONE)
             {
                 if (!singletones.ContainsKey(impl.TImplementation))
                 {
-                    while (!singletones.TryAdd(impl.TImplementation, CreateInstance(impl.TImplementation,_interface))) {}
-                    
+                    while (!singletones.TryAdd(impl.TImplementation, CreateInstance(ProcessImpl(impl.TImplementation, _interface)))) { }
+
                 }
                 return singletones.GetValueOrDefault(impl.TImplementation);
             }
             else
             {
-                return CreateInstance(impl.TImplementation,_interface);
+                return CreateInstance(ProcessImpl(impl.TImplementation, _interface));
 
             }
         }
 
-        private object CreateInstance(Type implementation, Type _interface)
-        {
-            if (   _interface.IsGenericType
-                && _interface.GenericTypeArguments.Length != 0
-                && implementation.GenericTypeArguments.Length == 0) {
-
-                implementation = implementation.MakeGenericType(_interface.GenericTypeArguments);
+        private Type ProcessImpl(Type impl, Type _intf) {
+            if (!impl.IsGenericType)
+                return impl;
+            if (_intf.IsGenericType) {
+                if (configuration.GetImplementations(_intf) == null) {
+                    var genTypesInterface = _intf.GenericTypeArguments;
+                    var newImpl = impl.GetGenericTypeDefinition();
+                    return newImpl.MakeGenericType(genTypesInterface);
+                }
+                
             }
+            return impl;
+        }
+
+        private object CreateInstance(Type implementation)
+        {            
             var constructors = ChooseConstructors(implementation).ToList();
             if (constructors.Count == 0) throw new ArgumentException($"{implementation} has no injectable constructor");
             foreach (var constructor in constructors)
@@ -117,7 +125,7 @@ namespace DependencyInjectionConteiner.Container
                     return constructor.Invoke(arguments.ToArray());
                 }
                 catch (Exception e) { };
-                
+
             }
 
             throw new Exception($"Can't create instance of {implementation}");
@@ -150,7 +158,7 @@ namespace DependencyInjectionConteiner.Container
             var parameterType = parameter.GetType();
             return parameterType.IsClass;
         }
-       
+
     }
 }
 

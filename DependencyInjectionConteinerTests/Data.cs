@@ -43,17 +43,23 @@ namespace DependencyInjectionConteinerTests
     }
 
     interface IService<TRepository>
-    { }
+    {
+        public TRepository Repository { get; set; }
+    }
 
     class NotGenericService : IService<IService> {
         public NotGenericService() { }
 
+        public IService Repository { get; set; }
     }
     class GenericServiceImpl<TRepository> : IService<TRepository>
     {
+        
         public GenericServiceImpl(TRepository repository)
         {
-
+            Repository = repository;
         }
+
+        public TRepository Repository { get; set; }
     }
 }

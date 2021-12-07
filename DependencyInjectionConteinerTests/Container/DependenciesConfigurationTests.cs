@@ -111,5 +111,20 @@ namespace DependencyInjectionConteiner.Container.Tests
             }
             
         }
+
+        [TestMethod()]
+        public void RegisterTestOpenGeneric()
+        {
+            var conf = new DependenciesConfiguration();
+            conf.Register(typeof(IService<>), typeof(GenericServiceImpl<>));
+            conf.Register(typeof(IService<>), typeof(NotGenericService));
+            conf.Register(typeof(IService<>), typeof(GenericServiceImpl<IRepository>));
+            var res = conf.GetImplementations(typeof(IService<>));
+            Assert.IsTrue(res != null);
+            var resArr = res.ToArray();
+            Assert.IsTrue(resArr.Length == 3 && resArr[0].TImplementation == typeof(GenericServiceImpl<>)
+                          && resArr[1].TImplementation == typeof(NotGenericService)
+                          && resArr[2].TImplementation == typeof(GenericServiceImpl<IRepository>));
+        }
     }
 }
