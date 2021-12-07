@@ -102,7 +102,7 @@ namespace DependencyInjectionConteiner.Container.Tests
             conf.Register<IService<IService>, NotGenericService>();
             var provider = new DependencyProvider(conf);
             var result = provider.Resolve<IService<IService>>();
-            Assert.IsTrue(result is GenericServiceImpl<IService>);
+            Assert.IsTrue(result is NotGenericService);
             Assert.IsTrue(result.Repository is ServiceImpl1);
         }
 
@@ -114,11 +114,28 @@ namespace DependencyInjectionConteiner.Container.Tests
             conf.Register<IRepository, RepositoryImpl>();
             conf.Register<IRepository, RepositoryImpl2>();
             conf.Register<IRepository2, RepositoryImpl2>();
+            conf.Register<IService<IService>, NotGenericService>();
             conf.Register(typeof(IService<>), typeof(GenericServiceImpl<>));
             var provider = new DependencyProvider(conf);
-            var result = provider.Resolve<IService<IRepository>>();
+            var result = provider.Resolve<IService<IService<IService>>>();
 
-            Assert.IsTrue(result is GenericServiceImpl<RepositoryImpl2>);
+            Assert.IsTrue(result is GenericServiceImpl<IService<IService>>);
+            Assert.IsTrue(result.Repository is NotGenericService);
+            Assert.IsTrue(result.Repository.Repository is ServiceImpl1);
+        }
+
+        [TestMethod()]
+        public void ResolveTestGenericDiffrentInterface()
+        {
+            var conf = new DependenciesConfiguration();
+            conf.Register<IService, ServiceImpl1>();
+            conf.Register<IRepository, RepositoryImpl>();
+            conf.Register<IRepository2, RepositoryImpl2>();
+            conf.Register(typeof(IService<>), typeof(GenericServiceImpl<IRepository2>));
+            var provider = new DependencyProvider(conf);
+            var result = provider.Resolve<IService<IRepository>>();
+            Assert.IsTrue(result is GenericServiceImpl<IRepository>);
+            Assert.IsTrue(result.Repository is RepositoryImpl2);
         }
 
 

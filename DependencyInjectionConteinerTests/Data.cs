@@ -48,7 +48,9 @@ namespace DependencyInjectionConteinerTests
     }
 
     class NotGenericService : IService<IService> {
-        public NotGenericService() { }
+        public NotGenericService(IService repository) {
+            Repository = repository;
+        }
 
         public IService Repository { get; set; }
     }
