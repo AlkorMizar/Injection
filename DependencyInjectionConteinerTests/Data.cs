@@ -7,25 +7,33 @@ using System.Threading.Tasks;
 namespace DependencyInjectionConteinerTests
 {
 
-    interface IService { }
+    interface IService { 
+        public IRepository Repository { get; set; }
+    }
     class ServiceImpl1 : IService
     {
+        public IRepository Repository { get; set; }
         public ServiceImpl1(IRepository repository) // ServiceImpl зависит от IRepository
         {
+            Repository = repository;
         }
     }
 
     class ServiceImpl2 : IService
     {
+        public IRepository Repository { get; set; }
         public ServiceImpl2(IRepository repository) // ServiceImpl зависит от IRepository
         {
+            Repository = repository;
         }
     }
 
     class ServiceImpl3 : IService
     {
-        public ServiceImpl3(IRepository repository) // ServiceImpl зависит от IRepository
+        public IRepository Repository { get; set; }
+        public ServiceImpl3(IRepository2 repository) // ServiceImpl зависит от IRepository
         {
+            Repository = repository;
         }
     }
 
