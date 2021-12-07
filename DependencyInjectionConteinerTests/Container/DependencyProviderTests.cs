@@ -124,25 +124,24 @@ namespace DependencyInjectionConteiner.Container.Tests
             Assert.IsTrue(result.Repository.Repository is ServiceImpl1);
         }
 
-        [TestMethod()]
-        public void ResolveTestGenericDiffrentInterface()
-        {
-            var conf = new DependenciesConfiguration();
-            conf.Register<IService, ServiceImpl1>();
-            conf.Register<IRepository, RepositoryImpl>();
-            conf.Register<IRepository2, RepositoryImpl2>();
-            conf.Register(typeof(IService<>), typeof(GenericServiceImpl<IRepository2>));
-            var provider = new DependencyProvider(conf);
-            var result = provider.Resolve<IService<IRepository>>();
-            Assert.IsTrue(result is GenericServiceImpl<IRepository>);
-            Assert.IsTrue(result.Repository is RepositoryImpl2);
-        }
-
 
         [TestMethod()] 
         public void ResolveAllTest()
         {
-            Assert.Fail();
+            var conf = new DependenciesConfiguration();
+            conf.Register<IService, ServiceImpl1>(LifeCycle.SINGLETONE, 1);
+            conf.Register<IService, ServiceImpl2>(LifeCycle.PER_DEPENDENCY, 2);
+            conf.Register<IService, ServiceImpl3>(LifeCycle.PER_DEPENDENCY, 3);
+            conf.Register<IRepository, RepositoryImpl>();
+            conf.Register<IRepository, RepositoryImpl2>();
+            var provider = new DependencyProvider(conf);
+            var result = provider.ResolveAll<IService>().ToArray();
+
+            Assert.IsTrue(result.Length == 3 &&
+                          result[0] is ServiceImpl1 &&
+                          result[1] is ServiceImpl2 &&
+                          result[2] is ServiceImpl3);
+
         }
     }
 }
